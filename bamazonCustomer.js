@@ -64,6 +64,7 @@ const fx = {
           align: 'center'
         })
       );
+      //   connection.end();
     });
   },
   init: function() {
@@ -87,6 +88,34 @@ const fx = {
           ])
           .then(qty_answer => {
             console.log(qty_answer.buy_qty);
+            connection.query(
+              'SELECT stock_qty FROM products WHERE ?',
+              {
+                item_id: id_answer.buy_id
+              },
+              (err, resChecked) => {
+                if (err) throw err;
+                if (resChecked[0].stock_qty > qty_answer.buy_qty) {
+                  connection.query(
+                    'UPDATE products SET ? WHERE ?',
+                    [
+                      {
+                        stock_qty: resChecked[0].stock_qty - qty_answer.buy_qty
+                      },
+                      { item_id: id_answer.buy_id }
+                    ],
+                    (err, res) => {
+                      if (err) throw err;
+                      console.log('Thank you for your purchase!');
+                      connection.end();
+                    }
+                  );
+                } else {
+                  console.log(`Sorry, insufficient stock. Check back later :)`);
+                  connection.end();
+                }
+              }
+            );
           });
       });
   }
@@ -102,5 +131,4 @@ connection.connect(err => {
   setTimeout(() => {
     fx.init();
   }, 500);
-  connection.end();
 });

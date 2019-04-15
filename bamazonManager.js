@@ -7,6 +7,37 @@ const dbAuth = require('./DB/dbAuth');
 const connection = mysql.createConnection(dbAuth('bamazon'));
 
 const fx = {
+  init: function() {
+    console.log(
+      `Hello, Welcome to Bamazon inventory management! Choose one of the following`
+    );
+    inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'initList',
+          choices: [
+            'View Products for sale',
+            'View Low Inventory',
+            'Add to Inventory',
+            'Add New Product'
+          ]
+        }
+      ])
+      .then(answer => {
+        switch (answer.initList) {
+          case 'View Products for sale':
+            this.forSale();
+            break;
+          case 'View Low Inventory':
+            this.lowInvetory();
+            break;
+          case 'Add to Inventory':
+            this.addInventory();
+            break;
+        }
+      });
+  },
   forSale: function() {
     connection.query('select * from products', (err, res) => {
       if (err) throw err;
@@ -64,7 +95,7 @@ const fx = {
           align: 'center'
         })
       );
-      //   connection.end();
+      connection.end();
     });
   },
   lowInvetory: function() {
@@ -187,9 +218,23 @@ const fx = {
                   ],
                   (err, res) => {
                     if (err) throw err;
-
                     console.log(`Inventory Updated!`);
-                    connection.end();
+                    inquirer
+                      .prompt([
+                        {
+                          type: 'confirm',
+                          message: 'Go to main menu?',
+                          default: 'true',
+                          name: 'mainMenuConfirm'
+                        }
+                      ])
+                      .then(answer => {
+                        if (answer.mainMenuConfirm) {
+                          fx.init();
+                        } else {
+                          connection.end();
+                        }
+                      });
                   }
                 );
               } else {
@@ -201,5 +246,6 @@ const fx = {
     });
   }
 };
-fx.forSale();
-fx.addInventory();
+
+// This is where it goes down
+fx.init();

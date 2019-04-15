@@ -8,9 +8,6 @@ const connection = mysql.createConnection(dbAuth('bamazon'));
 
 const fx = {
   init: function() {
-    console.log(
-      `Hello, Welcome to Bamazon inventory management! Choose one of the following`
-    );
     inquirer
       .prompt([
         {
@@ -307,4 +304,7 @@ const fx = {
 };
 
 // This is where it goes down
+console.log(
+  `Hello, Welcome to Bamazon inventory management! Choose one of the following`
+);
 fx.init();

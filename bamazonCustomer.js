@@ -1,12 +1,14 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
-const columnify = require('columnify');
+const columnify = require('columnify'); //this is to make the data look neat
 
-const dbAuth = require('./DB/dbAuth');
+const dbAuth = require('./DB/dbAuth'); //mysql data is located here
 
 const connection = mysql.createConnection(dbAuth('bamazon'));
 
+//all of the functions are in this object
 const fx = {
+  //call to display the current store
   displayItems: function() {
     connection.query('select * from products', (err, res) => {
       if (err) throw err;
@@ -67,7 +69,8 @@ const fx = {
       //   connection.end();
     });
   },
-  init: function() {
+  //works the main functionality
+  openStore: function() {
     inquirer
       .prompt([
         {
@@ -125,7 +128,7 @@ const fx = {
                             if (answer.confirm) {
                               fx.displayItems();
                               setTimeout(() => {
-                                fx.init();
+                                fx.openStore();
                               }, 100);
                             } else {
                               connection.end();
@@ -150,7 +153,7 @@ const fx = {
                         if (answer.confirm) {
                           fx.displayItems();
                           setTimeout(() => {
-                            fx.init();
+                            fx.openStore();
                           }, 100);
                         } else {
                           connection.end();
@@ -174,6 +177,6 @@ Here are the current items for sale.
 ------------------------------------------------------------------`);
   fx.displayItems();
   setTimeout(() => {
-    fx.init();
+    fx.openStore();
   }, 100);
 });

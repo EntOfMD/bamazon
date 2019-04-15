@@ -20,7 +20,8 @@ const fx = {
             'View Products for sale',
             'View Low Inventory',
             'Add to Inventory',
-            'Add New Product'
+            'Add New Product',
+            'EXIT'
           ]
         }
       ])
@@ -34,6 +35,17 @@ const fx = {
             break;
           case 'Add to Inventory':
             this.addInventory();
+            break;
+          case 'Add New Product':
+            this.addItem();
+            break;
+
+          case 'EXIT':
+            console.log('Have a great day!');
+            connection.end();
+            break;
+          default:
+            connection.end();
             break;
         }
       });
@@ -162,6 +174,7 @@ const fx = {
               align: 'center'
             })
           );
+          this.mainMenu();
         }
       }
     );
@@ -252,6 +265,43 @@ const fx = {
           console.log(`Have a great day!`);
           connection.end();
         }
+      });
+  },
+  addItem: function() {
+    inquirer
+      .prompt([
+        {
+          type: 'input',
+          message: `What's the Product Name?`,
+          name: 'pName'
+        },
+        {
+          type: 'input',
+          message: `What department does it belong to?`,
+          name: 'dName'
+        },
+        {
+          type: 'input',
+          message: `What's the price?`,
+          name: 'iPrice'
+        },
+        {
+          type: 'input',
+          message: `What's the current on-hand stock?`,
+          name: 'stockQty'
+        }
+      ])
+      .then(answer => {
+        let query = `INSERT INTO products (product_name,department_name,price,stock_qty) VALUES ('${
+          answer.pName
+        }','${answer.dName}','${answer.iPrice}','${answer.stockQty}')`;
+        connection.query(query, (err, res) => {
+          if (err) throw err;
+          console.log(
+            `ID# ${res.insertId} for has been created and succesfully added!`
+          );
+          this.mainMenu();
+        });
       });
   }
 };

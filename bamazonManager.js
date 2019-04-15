@@ -95,7 +95,8 @@ const fx = {
           align: 'center'
         })
       );
-      connection.end();
+      this.mainMenu();
+      //   connection.end();
     });
   },
   lowInvetory: function() {
@@ -103,61 +104,65 @@ const fx = {
       'SELECT * FROM products WHERE stock_qty < 5',
       (err, res) => {
         if (err) throw err;
-        console.log(
-          columnify(res, {
-            columns: [
-              'item_id',
-              'product_name',
-              'department_name',
-              'price',
-              'stock_qty'
-            ],
-            config: {
-              product_name: {
-                headingTransform: function(heading) {
-                  heading = `Product Name
+        if (res.length < 1) {
+          console.log(`Doesn't look like there's anything with low stock. `);
+          this.mainMenu();
+        } else {
+          console.log(
+            columnify(res, {
+              columns: [
+                'item_id',
+                'product_name',
+                'department_name',
+                'price',
+                'stock_qty'
+              ],
+              config: {
+                product_name: {
+                  headingTransform: function(heading) {
+                    heading = `Product Name
                       ------------------`;
-                  return heading;
-                }
-              },
-              item_id: {
-                headingTransform: function(heading) {
-                  heading = `Item #
-                      --------`;
-                  return heading;
-                }
-              },
-              department_name: {
-                headingTransform: function(heading) {
-                  heading = `Department
-                      ---------------`;
-                  return heading;
-                }
-              },
-              stock_qty: {
-                headingTransform: function(heading) {
-                  heading = `# in Stock
-                      ------------`;
-                  return heading;
-                }
-              },
-              price: {
-                headingTransform: function(heading) {
-                  heading = `Price
-                          --------`;
-                  return heading;
+                    return heading;
+                  }
                 },
-                dataTransform: function(data) {
-                  data = `$${data}`;
-                  return data;
+                item_id: {
+                  headingTransform: function(heading) {
+                    heading = `Item #
+                      --------`;
+                    return heading;
+                  }
+                },
+                department_name: {
+                  headingTransform: function(heading) {
+                    heading = `Department
+                      ---------------`;
+                    return heading;
+                  }
+                },
+                stock_qty: {
+                  headingTransform: function(heading) {
+                    heading = `# in Stock
+                      ------------`;
+                    return heading;
+                  }
+                },
+                price: {
+                  headingTransform: function(heading) {
+                    heading = `Price
+                          --------`;
+                    return heading;
+                  },
+                  dataTransform: function(data) {
+                    data = `$${data}`;
+                    return data;
+                  }
                 }
-              }
-            },
-            columnSplitter: '|',
-            align: 'center'
-          })
-        );
-        connection.end();
+              },
+              columnSplitter: '|',
+              align: 'center'
+            })
+          );
+        }
       }
     );
   },
@@ -219,22 +224,7 @@ const fx = {
                   (err, res) => {
                     if (err) throw err;
                     console.log(`Inventory Updated!`);
-                    inquirer
-                      .prompt([
-                        {
-                          type: 'confirm',
-                          message: 'Go to main menu?',
-                          default: 'true',
-                          name: 'mainMenuConfirm'
-                        }
-                      ])
-                      .then(answer => {
-                        if (answer.mainMenuConfirm) {
-                          fx.init();
-                        } else {
-                          connection.end();
-                        }
-                      });
+                    this.mainMenu();
                   }
                 );
               } else {
@@ -244,6 +234,25 @@ const fx = {
             });
         });
     });
+  },
+  mainMenu: function() {
+    inquirer
+      .prompt([
+        {
+          type: 'confirm',
+          message: 'Go to main menu?',
+          default: 'true',
+          name: 'mainMenuConfirm'
+        }
+      ])
+      .then(answer => {
+        if (answer.mainMenuConfirm) {
+          fx.init();
+        } else {
+          console.log(`Have a great day!`);
+          connection.end();
+        }
+      });
   }
 };
 

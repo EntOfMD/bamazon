@@ -96,7 +96,7 @@ const fx = {
             .then(qty_answer => {
               console.log(qty_answer.buy_qty);
               connection.query(
-                'SELECT stock_qty FROM products WHERE ?',
+                'SELECT stock_qty,price FROM products WHERE ?',
                 {
                   item_id: id_answer.buy_id
                 },
@@ -114,7 +114,10 @@ const fx = {
                       ],
                       (err, res) => {
                         if (err) throw err;
-                        console.log('Thank you for your purchase!');
+                        console.log(
+                          `Thank you for your purchase! Your total is $${resChecked[0]
+                            .price * qty_answer.buy_qty}`
+                        );
                         inquirer
                           .prompt([
                             {
